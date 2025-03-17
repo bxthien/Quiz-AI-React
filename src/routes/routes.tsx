@@ -5,16 +5,14 @@ import SaveQuiz from "../pages/saved-quiz/SaveQuiz";
 import QuizReview from "../pages/quiz-review/QuizReview";
 import Quiz from "../pages/quiz/Quiz";
 import Layout from "../layout/Layout";
-import Error from "../pages/error/Error";
 import Login from "../pages/login/Login";
-import AuthGuard from "../guards/AuthGuard";
-import UserProfile from "../pages/profile/UserProfile";
+import { Error404 } from "../components";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
-    errorElement: <Error />,
+    errorElement: <Error404 />,
     children: [
       {
         path: "/",
@@ -37,14 +35,6 @@ const router = createBrowserRouter([
         element: <QuizReview />,
       },
       { path: "/login", element: <Login /> },
-      {
-        path: "user-profile",
-        element: (
-          <AuthGuard>
-            <UserProfile />
-          </AuthGuard>
-        ),
-      },
     ],
   },
 ]);
