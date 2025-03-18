@@ -18,6 +18,8 @@ export interface QuizDataContext {
   quizData: QuizQuestion[];
   userAnswers: string[];
   currentAnswer: number;
+  storeQuizData: () => void;
+  removeQuiz: () => void;
   setQuizData: Dispatch<SetStateAction<QuizQuestion[]>>;
   setUserAnswers: Dispatch<SetStateAction<string[]>>;
   setCurrentAnswer: Dispatch<SetStateAction<number>>;
@@ -27,9 +29,15 @@ const QuizProvider = ({ children }: { children: ReactNode }) => {
   const [quizData, setQuizData] = useState<QuizQuestion[]>([]);
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
   const [currentAnswer, setCurrentAnswer] = useState<number>(0);
-  useEffect(() => {
+
+  const storeQuizData = () => {
     localStorage.setItem(QUIZ_DATA_KEY, JSON.stringify(quizData));
-  }, [quizData]);
+  };
+  const removeQuiz = () => {
+    localStorage.removeItem(QUIZ_DATA_KEY);
+    localStorage.removeItem(QUIZ_ANSWERS_KEY);
+    localStorage.removeItem(QUIZ_CURRRENT_KEY);
+  };
   useEffect(() => {
     localStorage.setItem(QUIZ_ANSWERS_KEY, JSON.stringify(userAnswers));
   }, [userAnswers]);
@@ -51,6 +59,8 @@ const QuizProvider = ({ children }: { children: ReactNode }) => {
         quizData,
         userAnswers,
         currentAnswer,
+        storeQuizData,
+        removeQuiz,
         setQuizData,
         setUserAnswers,
         setCurrentAnswer,

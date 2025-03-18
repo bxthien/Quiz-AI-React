@@ -5,11 +5,10 @@ import Footer from "../components/Footer/Footer";
 const Layout = () => {
   return (
     <>
-      <Navigation />
-      <div className="min-h-screen">
+      <div className="h-screen flex flex-col">
+        <Navigation />
         <Outlet />
       </div>
-      <Footer />
     </>
   );
 };

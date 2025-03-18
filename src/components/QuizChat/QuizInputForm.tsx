@@ -4,34 +4,45 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { QuizContext, useQuizData } from "../../context/QuizContext";
 import { QuizAIProb } from "../../constrains/GemeniQuizAIPrompt";
 import requestAPI from "../../services/GeminiApi";
+import { useLoading } from "../../hooks/useLoading";
+import { useLoadingContext } from "../../context/LoadingContext";
+import { setInterval } from "timers";
+import { useNavigate } from "react-router-dom";
 const { Option } = Select;
 
 const QuizInputForm = () => {
-  const [loading, setLoading] = useState(false);
+  const { isLoading, loading, stopLoading } = useLoadingContext();
+  const [error, setError] = useState<string | null>(null);
   const initData: QuizAIProb = {
     topic: "",
     amount: "10",
     selectedLevel: "Low",
     language: "Vietnamese",
   };
-  const { setQuizData } = useQuizData();
+  const { quizData, setQuizData, removeQuiz } = useQuizData();
+  const showError = (message: string) => {
+    setError(message);
+    setTimeout(() => {
+      setError(null);
+    }, 300000);
+  };
   const handleSubmit = async (values: QuizAIProb) => {
-    console.log("Submitted");
-    const jsonData = await requestAPI({ prop: values });
-    if (jsonData.error) {
-      return (
-        <Alert
-          message="Error"
-          description="This is an error message about copywriting."
-          type="error"
-          showIcon
-        />
-      );
-    } else {
-      setQuizData(jsonData);
-      console.log(jsonData);
+    loading();
+    try {
+      removeQuiz();
+      const jsonData = await requestAPI({ prop: values });
+      if (jsonData.error || jsonData[0].error) {
+        showError("Your topic is dump!!!");
+      } else {
+        setQuizData(jsonData);
+        console.log(jsonData);
+      }
+    } catch (err) {
+    } finally {
+      stopLoading();
     }
   };
+  
   const validateTopic = (_: any, value: any) => {
     if (!value || value.trim().length < 3) {
       return Promise.reject("Topic must have at least 3 characters!");
@@ -42,7 +53,7 @@ const QuizInputForm = () => {
     return Promise.resolve();
   };
   return (
-    <Form layout="vertical" onFinish={handleSubmit}>
+    <Form layout="vertical" initialValues={initData} onFinish={handleSubmit}>
       <Form.Item
         name="topic"
         label="Topic"
@@ -54,8 +65,8 @@ const QuizInputForm = () => {
         <Input placeholder="Enter topic..." />
       </Form.Item>
 
-      <Form.Item name="level" label="Levels">
-        <Select defaultValue="Easy">
+      <Form.Item name="selectedLevel" label="Levels">
+        <Select>
           <Option value="Easy">Easy</Option>
           <Option value="Medium">Medium</Option>
           <Option value="Hard">Hard</Option>
@@ -63,29 +74,41 @@ const QuizInputForm = () => {
       </Form.Item>
 
       <Form.Item name="language" label="Language">
-        <Select defaultValue="English">
+        <Select>
           <Option value="English">English</Option>
           <Option value="Vietnamese">Vietnamese</Option>
         </Select>
       </Form.Item>
       <Form.Item name="amount" label="Number">
-        <Input type="number" defaultValue={10} />
+        <Input type="number" />
       </Form.Item>
 
-      <Form.Item>
-        <Button
-          type="primary"
-          htmlType="submit"
-          className="w-full"
-          disabled={loading}
-        >
-          {loading ? (
-            <AiOutlineLoading3Quarters className="animate-spin" />
-          ) : (
-            "Render"
-          )}
-        </Button>
+      <Form.Item layout="horizontal">
+        <div className={`flex gap-2 w-full justify-around`}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            disabled={isLoading}
+            className={`${quizData && quizData[0] ? "flex-1" : "w-full"}`}
+          >
+            {isLoading ? (
+              <AiOutlineLoading3Quarters className="animate-spin" />
+            ) : quizData && quizData[0] ? (
+              "Re-Generate"
+            ) : (
+              "Generate"
+            )}
+          </Button>
+
+         
+        </div>
       </Form.Item>
+
+      {error ? (
+        <Form.Item className="flex align-middle">{error}</Form.Item>
+      ) : (
+        <></>
+      )}
     </Form>
   );
 };
