@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Card } from "antd";
-import QuizCard from "../../components/QuizCard";
+import QuizCard from "../../components/QuizCard/QuizCard";
 import type { Quiz } from "../../types/quiz";
 import { getQuizzes, deleteQuiz, seedDummyData } from "../../utils/indexedDB";
 
