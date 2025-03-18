@@ -22,9 +22,9 @@ const QuizChatReview = () => {
       <div className="h-full overflow-y-auto p-4 space-y-4">
         {quizData ? (
           quizData.map((element: QuizQuestion, index: number) => (
-            <div key={index} className="p-4 rounded-xl my-3 bg-blue-300">
+            <div key={index} className="p-4 rounded-xl my-3 bg-green-200">
               <p className="font-bold">{element.question}</p>
-              <div >
+              <div>
                 {Object.entries(element.answers).map(([key, value]) => (
                   <p key={key} className="text-gray-600">
                     {key}: {value as string}
@@ -37,13 +37,12 @@ const QuizChatReview = () => {
           <div>Loading...</div>
         )}
         {quizData && quizData[0] && (
-          <Button
-            type="primary"
+          <button
             onClick={startQuiz}
             disabled={isLoading}
             style={{
               position: "absolute",
-              bottom: "50px",
+              bottom: "10px",
               left: "65%",
               transform: "translateX(-50%)",
               borderRadius: 20,
@@ -52,9 +51,14 @@ const QuizChatReview = () => {
               alignItems: "center",
               gap: 5,
             }}
+            className="w-50 h-30 transition-transform duration-300 hover:scale-110 active:scale-90 "
           >
-            Start Quiz
-          </Button>
+            <img
+              src={"/start.svg"}
+              alt="Submit Button"
+              className="w-full h-full object-fit"
+            />
+          </button>
         )}
       </div>
     </div>

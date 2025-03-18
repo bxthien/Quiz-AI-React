@@ -1,13 +1,10 @@
-import { Form, Input, Select, Button, Alert } from "antd";
-import { useContext, useState } from "react";
+import { Alert, Form, Input, Select } from "antd";
+import { useState } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { QuizContext, useQuizData } from "../../context/QuizContext";
+import { useQuizData } from "../../context/QuizContext";
 import { QuizAIProb } from "../../constrains/GemeniQuizAIPrompt";
 import requestAPI from "../../services/GeminiApi";
-import { useLoading } from "../../hooks/useLoading";
 import { useLoadingContext } from "../../context/LoadingContext";
-import { setInterval } from "timers";
-import { useNavigate } from "react-router-dom";
 const { Option } = Select;
 
 const QuizInputForm = () => {
@@ -42,13 +39,19 @@ const QuizInputForm = () => {
       stopLoading();
     }
   };
-  
+
   const validateTopic = (_: any, value: any) => {
     if (!value || value.trim().length < 3) {
       return Promise.reject("Topic must have at least 3 characters!");
     }
     if (/[^a-zA-Z0-9\u00C0-\u1EF9\s]/.test(value)) {
       return Promise.reject("The topic must not contain special characters!");
+    }
+    return Promise.resolve();
+  };
+  const validateNumber = (_: any, value: any) => {
+    if (!value || (value as number) > 10) {
+      return Promise.reject("The number of questions must be less than 11.");
     }
     return Promise.resolve();
   };
@@ -79,36 +82,39 @@ const QuizInputForm = () => {
           <Option value="Vietnamese">Vietnamese</Option>
         </Select>
       </Form.Item>
-      <Form.Item name="amount" label="Number">
+      <Form.Item
+        name="amount"
+        label="Number"
+        rules={[{ validator: validateNumber }]}
+      >
         <Input type="number" />
       </Form.Item>
 
       <Form.Item layout="horizontal">
         <div className={`flex gap-2 w-full justify-around`}>
-          <Button
-            type="primary"
-            htmlType="submit"
+          <button
+            type="submit"
             disabled={isLoading}
-            className={`${quizData && quizData[0] ? "flex-1" : "w-full"}`}
+            className="relative w-40 h-20 flex justify-center items-center bg-transparent border-none transition-transform duration-300 hover:scale-110 active:scale-90 "
           >
             {isLoading ? (
-              <AiOutlineLoading3Quarters className="animate-spin" />
-            ) : quizData && quizData[0] ? (
-              "Re-Generate"
+              <AiOutlineLoading3Quarters className="absolute text-white text-3xl animate-spin" />
             ) : (
-              "Generate"
+              <img
+                src={
+                  quizData && quizData[0]
+                    ? "/re-generate.svg"
+                    : "/generate-btn.svg"
+                }
+                alt="Submit Button"
+                className="w-full h-full object-fit"
+              />
             )}
-          </Button>
-
-         
+          </button>
         </div>
       </Form.Item>
 
-      {error ? (
-        <Form.Item className="flex align-middle">{error}</Form.Item>
-      ) : (
-        <></>
-      )}
+      {error && <Alert message={error} type="warning" />}
     </Form>
   );
 };

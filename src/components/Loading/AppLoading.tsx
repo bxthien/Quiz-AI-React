@@ -14,7 +14,11 @@ const AppLoading = ({ isShowLoading, message }: IAppLoading) => {
       closable={false}
       centered
       maskClosable={false}
-      maskStyle={{ position: "absolute", zIndex: 9999 }}
+      maskStyle={{
+        position: "absolute",
+        zIndex: 9999,
+        backgroundColor: "transparent",
+      }}
     >
       <div style={{ textAlign: "center", padding: "20px" }}>
         <Spin size="large" style={{ marginBottom: 16 }} />
@@ -28,9 +32,7 @@ const AppLoading = ({ isShowLoading, message }: IAppLoading) => {
             </Typography.Text>
           </>
         )}
-        <Typography.Text type="secondary">
-          Wait.
-        </Typography.Text>
+        <Typography.Text type="secondary">Wait.</Typography.Text>
       </div>
     </Modal>
   );
