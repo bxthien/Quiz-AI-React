@@ -109,6 +109,8 @@ const Navbar = () => {
         <button
           className="md:hidden text-gray-700 focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
+          aria-label="Open menu" // ✅ Thêm mô tả cho button
+          title="Open menu" // ✅ Hiển thị khi hover
         >
           <MenuOutlined className="text-2xl" />
         </button>

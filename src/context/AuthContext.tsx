@@ -61,6 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser(parsedUser);
           setIsAuthenticated(true);
         } catch (error) {
+          console.error("Lỗi parse user:", error); // ✅ Log lỗi để debug
           localStorage.removeItem("user");
           setUser(null);
           setIsAuthenticated(false);

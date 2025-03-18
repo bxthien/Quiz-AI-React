@@ -97,7 +97,10 @@ const Login = () => {
   );
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-400 to-indigo-600">
+    <div
+      className="flex items-center justify-center min-h-screen"
+      style={{ backgroundImage: "url('/background.png')" }}
+    >
       <div className="w-full max-w-md px-6 py-8 mx-4">
         <div className="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]">
           <div className="px-8 pt-8 pb-6">
