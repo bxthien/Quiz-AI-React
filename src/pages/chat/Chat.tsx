@@ -35,7 +35,7 @@ const chat: React.FC = () => {
             gap: 5,
           }}
         >
-          <Image src="../../../public/logo.png" width={100} height={100} />
+          <Image src="../../../public/logo.png" width={100} height={100} className="hover:touch-none"/>
         </div>
         <div className="mt-0 md:mt-15">
           <QuizInputForm />
