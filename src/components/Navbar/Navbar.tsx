@@ -83,6 +83,9 @@ const Navbar = () => {
           <Link to="/user-profile" className="hover:text-blue-500 transition">
             User Profile
           </Link>
+          <Link to="/quiz-review" className="block hover:text-blue-500">
+            Quiz Review
+          </Link>
 
           {/* Hiển thị thông tin User */}
           {currentUser ? (
@@ -125,6 +128,7 @@ const Navbar = () => {
           <Link to="/saved-quiz" className="block hover:text-blue-500">
             Saved Quiz
           </Link>
+
           <Link to="/chat" className="block hover:text-blue-500">
             Generate Quiz
           </Link>

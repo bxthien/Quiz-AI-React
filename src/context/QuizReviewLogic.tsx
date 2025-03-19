@@ -1,39 +1,26 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuizData } from "./QuizContext";
 
-type QuestionData = {
-  question: string;
-  answers: Record<string, string>;
-  correct_answers: string[];
-  short_explain_for_answer: string | Record<string, string>;
-};
 
 const useQuizReview = () => {
-  const [quizData, setQuizData] = useState<QuestionData[]>([]);
-  const [userAnswers, setUserAnswers] = useState<Record<number, string[]>>({});
+  const { quizData, userAnswers } = useQuizData();
   const [correctCount, setCorrectCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedQuiz = localStorage.getItem("quiz");
-    const storedAnswers = localStorage.getItem("quiz-answers");
-
-    if (!storedQuiz || !storedAnswers) {
-      navigate("/"); // Không có dữ liệu, chuyển hướng về trang chủ
-      return;
-    }
-
-    const parsedQuiz: QuestionData[] = JSON.parse(storedQuiz);
-    const parsedAnswers: Record<number, string[]> = JSON.parse(storedAnswers);
-    setQuizData(parsedQuiz);
-    setUserAnswers(parsedAnswers);
+    // if (!storedQuiz && storedAnswers === null) {
+    //   navigate("/hahahaha"); // Không có dữ liệu, chuyển hướng về trang chủ
+    //   return;
+    // }
 
     let correct = 0;
-    parsedQuiz.forEach((question, index) => {
-      const userAnswer = parsedAnswers[index] || [];
+    quizData.forEach((question, index) => {
+      const userAnswer = userAnswers[index] || [];
       const isCorrect =
         new Set(userAnswer).size === new Set(question.correct_answers).size &&
+        Array.isArray(userAnswer) &&
         userAnswer.every((ans) => question.correct_answers.includes(ans));
 
       if (isCorrect) correct++;
@@ -45,7 +32,14 @@ const useQuizReview = () => {
 
   const quizId = Date.now(); // Tạo một ID tạm thời
 
-  return { quizId, quizData, userAnswers, correctCount, isModalOpen, setIsModalOpen };
+  return {
+    quizId,
+    quizData,
+    userAnswers,
+    correctCount,
+    isModalOpen,
+    setIsModalOpen,
+  };
 };
 
 export default useQuizReview;
