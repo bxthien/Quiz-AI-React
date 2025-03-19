@@ -18,6 +18,8 @@ export interface QuizDataContext {
   quizData: QuizQuestion[];
   userAnswers: string[];
   currentAnswer: number;
+  nextQuestion: () => void;
+  prevQuestion: () => void;
   storeQuizData: () => void;
   removeQuiz: () => void;
   setQuizData: Dispatch<SetStateAction<QuizQuestion[]>>;
@@ -25,25 +27,42 @@ export interface QuizDataContext {
   setCurrentAnswer: Dispatch<SetStateAction<number>>;
 }
 export const QuizContext = createContext<QuizDataContext | null>(null);
+
 const QuizProvider = ({ children }: { children: ReactNode }) => {
   const [quizData, setQuizData] = useState<QuizQuestion[]>([]);
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
   const [currentAnswer, setCurrentAnswer] = useState<number>(0);
 
+  const nextQuestion = () => {
+    setCurrentAnswer((prevIndex) =>
+      prevIndex < quizData.length - 1 ? prevIndex + 1 : prevIndex
+    );
+  };
+
+  const prevQuestion = () => {
+    setCurrentAnswer((prevIndex) =>
+      prevIndex > 0 ? prevIndex - 1 : prevIndex
+    );
+  };
+
   const storeQuizData = () => {
     localStorage.setItem(QUIZ_DATA_KEY, JSON.stringify(quizData));
   };
+
   const removeQuiz = () => {
     localStorage.removeItem(QUIZ_DATA_KEY);
     localStorage.removeItem(QUIZ_ANSWERS_KEY);
     localStorage.removeItem(QUIZ_CURRRENT_KEY);
   };
+
   useEffect(() => {
     localStorage.setItem(QUIZ_ANSWERS_KEY, JSON.stringify(userAnswers));
   }, [userAnswers]);
+
   useEffect(() => {
     localStorage.setItem(QUIZ_CURRRENT_KEY, JSON.stringify(currentAnswer));
   }, [currentAnswer]);
+
   useEffect(() => {
     const storedQuizData = localStorage.getItem(QUIZ_DATA_KEY);
     const storedUserAnswers = localStorage.getItem(QUIZ_ANSWERS_KEY);
@@ -53,12 +72,15 @@ const QuizProvider = ({ children }: { children: ReactNode }) => {
     if (storedUserAnswers) setUserAnswers(JSON.parse(storedUserAnswers));
     if (storedCurrentAnswer) setCurrentAnswer(JSON.parse(storedCurrentAnswer));
   }, []);
+
   return (
     <QuizContext.Provider
       value={{
         quizData,
         userAnswers,
         currentAnswer,
+        nextQuestion,
+        prevQuestion,
         storeQuizData,
         removeQuiz,
         setQuizData,

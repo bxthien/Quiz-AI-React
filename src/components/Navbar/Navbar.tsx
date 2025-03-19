@@ -80,9 +80,6 @@ const Navbar = () => {
           <Link to="/chat" className="hover:text-blue-500 transition">
             Generate Quiz
           </Link>
-          <Link to="/user-profile" className="hover:text-blue-500 transition">
-            User Profile
-          </Link>
 
           {/* Hiển thị thông tin User */}
           {currentUser ? (
