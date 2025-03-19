@@ -9,7 +9,7 @@ const QuizReview = () => {
     useQuizReview();
 
   return (
-    <div className="text-left text-sm md:text-lg">
+    <div className="text-left text-sm md:text-lg bg-[url('/background.png')]">
       <div className="max-w-2xl mx-auto p-4">
         <div className="static bg-[#BDE0FE] rounded-lg shadow-lg p-6 text-left">
           <img
