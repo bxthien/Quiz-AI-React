@@ -16,7 +16,7 @@ const useQuizReview = () => {
   useEffect(() => {
     let storedQuiz = localStorage.getItem("quiz");
     let storedAnswers = localStorage.getItem("quiz-answers");
-
+  
     if (!storedQuiz || !storedAnswers) {
       const sampleQuiz: QuestionData[] = [
         {
@@ -42,38 +42,42 @@ const useQuizReview = () => {
           short_explain_for_answer: "Mars is known as the Red Planet due to its reddish appearance.",
         },
       ];
-
+  
       const sampleAnswers: Record<number, string[]> = {
         0: ["C"],
         1: ["A"],
       };
-
+  
       localStorage.setItem("quiz", JSON.stringify(sampleQuiz));
       localStorage.setItem("quiz-answers", JSON.stringify(sampleAnswers));
-
+  
       storedQuiz = JSON.stringify(sampleQuiz);
       storedAnswers = JSON.stringify(sampleAnswers);
     }
-
+  
     const parsedQuiz: QuestionData[] = JSON.parse(storedQuiz);
     const parsedAnswers: Record<number, string[]> = JSON.parse(storedAnswers);
     setQuizData(parsedQuiz);
     setUserAnswers(parsedAnswers);
-
+  
     let correct = 0;
     parsedQuiz.forEach((question, index) => {
       const userAnswer = parsedAnswers[index] || [];
       const isCorrect =
         new Set(userAnswer).size === new Set(question.correct_answers).size &&
         userAnswer.every((ans) => question.correct_answers.includes(ans));
-
+  
       if (isCorrect) correct++;
     });
-
+  
     setCorrectCount(correct);
-  }, []);
+  
+    // Lưu correctCount vào LocalStorage để sử dụng ở useQuizSave
+    localStorage.setItem("correctCount", correct.toString());
+  }, []);  
+  const quizId = Date.now(); // Tạo một ID tạm thời
 
-  return { quizData, userAnswers, correctCount, isModalOpen, setIsModalOpen };
+  return { quizId, quizData, userAnswers, correctCount, isModalOpen, setIsModalOpen };  
 };
 
 export default useQuizReview;

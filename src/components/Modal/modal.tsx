@@ -1,64 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { useState } from "react";
+import useQuizSave from "../../hooks/useQuizSave";
+import Success from "../../components/Notification/Success"; // Import Success.tsx
 
-const Modal = ({ onClose }: { onClose: () => void }) => {
-  const [db, setDb] = useState<IDBDatabase | null>(null);
-  const [title, setTitle] = useState("");
-  const navigate = useNavigate();
+const Modal = ({
+  quizId,
+  score,
+  onClose,
+}: {
+  quizId: number;
+  score: number;
+  onClose: () => void;
+}) => {
+  const [showSuccess, setShowSuccess] = useState(false);
+  const { title, setTitle, isExisting, handleSaveNew, handleUpdate } = useQuizSave(
+    quizId,
+    score,
+    () => setShowSuccess(true) // Khi lưu xong, hiển thị Success.tsx
+  );
 
-  useEffect(() => {
-    const request = indexedDB.open("quizDB", 1);
-
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      if (!db.objectStoreNames.contains("quizzes")) {
-        db.createObjectStore("quizzes", { keyPath: "id", autoIncrement: true });
-      }
-    };
-
-    request.onsuccess = (event) => {
-      setDb((event.target as IDBOpenDBRequest).result);
-    };
-
-    request.onerror = (event) => {
-      console.error("Lỗi mở IndexedDB:", (event.target as IDBOpenDBRequest).error);
-    };
-  }, []);
-
-  const handleSave = () => {
-    if (!title.trim()) {
-      alert("Vui lòng nhập tiêu đề!");
-      return;
-    }
-
-    const quizData = JSON.parse(localStorage.getItem("quiz") || "[]");
-
-    if (!Array.isArray(quizData) || quizData.length === 0) {
-      alert("Không tìm thấy dữ liệu quiz trong localStorage!");
-      return;
-    }
-
-    if (db) {
-      const transaction = db.transaction(["quizzes"], "readwrite");
-      const store = transaction.objectStore("quizzes");
-
-      const dataToSave = { title, questions: quizData };
-
-      const addRequest = store.add(dataToSave);
-
-      addRequest.onsuccess = () => {
-        console.log("Đã lưu vào IndexedDB:", dataToSave);
-        localStorage.removeItem("quiz");
-        alert("Quiz đã được lưu!");
-        onClose();
-        navigate("/saved-quiz");
-      };
-
-      addRequest.onerror = (event) => {
-        console.error("Lỗi khi lưu vào IndexedDB:", (event.target as IDBRequest).error);
-      };
-    }
-  };
+  if (showSuccess) {
+    return <Success onClose={() => setShowSuccess(false)} />;
+  }
 
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-opacity-50">
@@ -74,14 +37,26 @@ const Modal = ({ onClose }: { onClose: () => void }) => {
             onChange={(e) => setTitle(e.target.value)}
           />
 
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end">
             <button className="mt-2 px-4 text-black font-bold rounded" onClick={onClose}>
               Close
             </button>
-            <button
-              className="bg-[url('./save-btn.svg')] w-30 h-15 bg-contain bg-no-repeat mt-8 px-4"
-              onClick={handleSave}
-            ></button>
+
+            {isExisting ? (
+              <div>
+                <p className="text-red-500">Quiz already exists! Update or create new?</p>
+                <button className="bg-green-500 text-white p-2 rounded" onClick={handleSaveNew}>
+                  Save new
+                </button>
+                <button className="bg-yellow-500 w-20 text-white p-2 rounded-4xl" onClick={handleUpdate}>
+                  Update
+                </button>
+              </div>
+            ) : (
+              <button className="bg-[#0077B6] w-20 text-white p-2 mt-4 rounded-4xl" onClick={handleSaveNew}>
+                Save
+              </button>
+            )}
           </div>
         </div>
       </div>
