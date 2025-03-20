@@ -20,7 +20,7 @@ const QuizChatReview = () => {
   return (
     <div className="h-full bg-white rounded-xl overflow-hidden">
       <div className="h-full overflow-y-auto p-4 space-y-4">
-        {quizData ? (
+        {quizData && Array.isArray(quizData) ? (
           quizData.map((element: QuizQuestion, index: number) => (
             <div key={index} className="p-4 rounded-xl my-3 bg-green-200">
               <p className="font-bold">{element.question}</p>
